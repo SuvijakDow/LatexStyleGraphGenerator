@@ -20,6 +20,7 @@ export const registerUser = async (req, res) => {
                 _id: user.id,
                 username: user.username,
                 fullName: user.fullName,
+                profilePicture: user.profilePicture,
                 token: generateToken(user._id)
             });
         }
@@ -37,6 +38,7 @@ export const loginUser = async (req, res) => {
                 _id: user.id,
                 username: user.username,
                 fullName: user.fullName,
+                profilePicture: user.profilePicture,
                 token: generateToken(user._id)
             });
         } else {
@@ -65,6 +67,7 @@ export const googleLogin = async (req, res) => {
             _id: user.id,
             username: user.username,
             fullName: user.fullName,
+            profilePicture: user.profilePicture,
             token: generateToken(user._id)
         });
     } catch (error) {
@@ -74,7 +77,7 @@ export const googleLogin = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { username, fullName } = req.body;
+        const { username, fullName, profilePicture } = req.body;
         const user = await User.findById(req.user._id);
         
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -86,12 +89,14 @@ export const updateProfile = async (req, res) => {
         }
 
         if (fullName !== undefined) user.fullName = fullName;
+        if (profilePicture !== undefined) user.profilePicture = profilePicture;
 
         await user.save();
         res.json({
             _id: user.id,
             username: user.username,
             fullName: user.fullName,
+            profilePicture: user.profilePicture,
             token: generateToken(user._id)
         });
     } catch (error) {

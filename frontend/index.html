@@ -45,20 +45,19 @@
 
   <!-- Header -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
-    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3">
-        <div class="flex items-center gap-2">
-          <i data-lucide="line-chart" class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600"></i>
-          <h1 class="font-bold text-lg sm:text-xl tracking-tight text-slate-800 hover:opacity-80 cursor-pointer"
+    <div class="max-w-[1400px] mx-auto px-2.5 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 overflow-hidden">
+      <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink min-w-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <i data-lucide="line-chart" class="w-5 h-5 sm:w-7 sm:h-7 text-blue-600"></i>
+          <h1 class="font-bold text-base sm:text-xl tracking-tight text-slate-800 hover:opacity-80 cursor-pointer whitespace-nowrap"
             onclick="window.location.href='/'">
             LatexStyle<span class="text-slate-400 font-normal">Graph</span>
           </h1>
         </div>
-        <span class="hidden sm:block text-slate-300">|</span>
         <div
-          class="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 focus-within:border-blue-400 focus-within:bg-white transition-colors">
+          class="flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-2 py-1 rounded-md border border-slate-200 focus-within:border-blue-400 focus-within:bg-white transition-colors flex-shrink min-w-0">
           <input type="text" id="currentGraphNameDisplay" value="Untitled Graph"
-            class="bg-transparent outline-none w-full min-w-[80px] max-w-[120px] sm:max-w-[200px] hover:text-blue-600 focus:text-slate-800" />
+            class="bg-transparent outline-none w-full min-w-[50px] max-w-[120px] sm:max-w-[200px] hover:text-blue-600 focus:text-slate-800" />
           <span id="dirtyIndicator" class="text-amber-500 font-bold opacity-0 transition-opacity"
             title="Unsaved changes">*</span>
         </div>
@@ -69,14 +68,17 @@
           <i data-lucide="file-plus" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden lg:inline">New</span>
         </button>
         <button id="saveShareBtn"
-          class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors py-1.5 px-3 rounded-lg shadow-sm">
-          <i data-lucide="save" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">Save</span>
+          class="flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors py-1 px-2.5 rounded-lg shadow-sm">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Save</span>
         </button>
         <button id="userDisplay"
-          class="hidden items-center gap-2 px-2.5 py-1.5 bg-slate-100 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-white transition-all group">
-          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse group-hover:bg-blue-500"></div>
+          class="hidden items-center gap-1.5 px-1 py-0.5 bg-slate-100 rounded-full border border-slate-200 hover:border-blue-300 hover:bg-white transition-all group shrink-0">
+          <div id="userAvatarContainer" class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-inner">
+             <span id="userInitials">?</span>
+             <img id="userAvatarImg" class="hidden w-full h-full object-cover" src="" alt="Avatar">
+          </div>
           <span id="userNameText"
-            class="text-[11px] sm:text-xs font-bold text-slate-600 truncate max-w-[60px] sm:max-w-[120px]"></span>
+            class="hidden lg:inline text-xs font-bold text-slate-600 truncate max-w-[100px]"></span>
         </button>
         <button id="authBtn"
           class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors py-1.5 px-2 sm:px-3 rounded-lg border border-slate-200 hover:border-blue-200 bg-slate-50 hover:bg-blue-50">
@@ -1018,6 +1020,10 @@
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Display Name</label>
           <input type="text" id="profileFullName" placeholder="Your Name" class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-sm" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Profile Picture URL</label>
+          <input type="url" id="profilePicture" placeholder="https://example.com/avatar.jpg" class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-sm" />
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Username (Login ID)</label>

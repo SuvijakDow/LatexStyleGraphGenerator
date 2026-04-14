@@ -250,17 +250,28 @@ math-field::part(virtual-keyboard-toggle) {
   }
 }
 
-@media (max-width: 480px) {
-  header div.flex-col {
-    gap: 0px !important;
-  }
-  
-  #currentGraphNameDisplay {
-    font-size: 10px;
-    max-width: 70px !important;
-  }
+#userAvatarContainer {
+  transition: transform 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
 
-  header div.gap-1\.5 {
-    gap: 0.25rem !important;
+#userDisplay:hover #userAvatarContainer {
+  transform: scale(1.05);
+}
+
+.avatar-ring {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #e2e8f0;
+}
+
+@media (max-width: 639px) {
+  header button {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #userNameText {
+    display: none;
   }
 }

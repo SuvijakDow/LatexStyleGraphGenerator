@@ -306,9 +306,38 @@ async function initApp() {
           if (userDisplay && userNameText) {
               userDisplay.classList.remove('hidden');
               userDisplay.classList.add('flex');
+              
               // Prefer Full Name, then Email Prefix, then Username
               const displayName = user.fullName || (user.username.includes('@') ? user.username.split('@')[0] : user.username);
               userNameText.innerText = displayName;
+
+              // Handle Avatar/Initials
+              const avatarImg = document.getElementById('userAvatarImg');
+              const initialsSpan = document.getElementById('userInitials');
+              const avatarContainer = document.getElementById('userAvatarContainer');
+
+              if (user.profilePicture) {
+                  avatarImg.src = user.profilePicture;
+                  avatarImg.onload = () => {
+                      avatarImg.classList.remove('hidden');
+                      initialsSpan.classList.add('hidden');
+                  };
+                  avatarImg.onerror = () => {
+                      avatarImg.classList.add('hidden');
+                      initialsSpan.classList.remove('hidden');
+                  };
+              } else {
+                  avatarImg.classList.add('hidden');
+                  initialsSpan.classList.remove('hidden');
+                  initialsSpan.innerText = displayName.charAt(0).toUpperCase();
+                  
+                  // Palette for initials
+                  const colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-blue-600', 'bg-rose-600', 'bg-amber-600', 'bg-teal-600'];
+                  const colorIdx = Math.abs(displayName.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % colors.length);
+                  avatarContainer.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-inner ${colors[colorIdx]}`;
+              }
+
+              }
           }
       } else {
           authBtnText.innerText = 'Login';
@@ -328,6 +357,7 @@ async function initApp() {
       
       const modal = document.getElementById('profileModal');
       document.getElementById('profileFullName').value = user.fullName || '';
+      document.getElementById('profilePicture').value = user.profilePicture || '';
       document.getElementById('profileUsername').value = user.username;
       modal.classList.remove('hidden');
   };
@@ -335,6 +365,7 @@ async function initApp() {
   document.getElementById('profileForm').onsubmit = async (e) => {
       e.preventDefault();
       const fullName = document.getElementById('profileFullName').value.trim();
+      const profilePicture = document.getElementById('profilePicture').value.trim();
       const username = document.getElementById('profileUsername').value.trim();
       
       const btn = document.getElementById('profileSubmitBtn');
@@ -342,7 +373,7 @@ async function initApp() {
       btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...`;
       
       try {
-          await updateProfile(username, fullName);
+          await updateProfile(username, fullName, profilePicture);
           showCustomToast("Profile updated successfully!");
           document.getElementById('profileModal').classList.add('hidden');
           updateAuthUI();
