@@ -23,7 +23,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Health Check
-app.get('/', (req, res) => res.send('API is running...'));
+app.get('/api', (req, res) => res.send('API is running... (Vercel Edition)'));
 
 // Routes
 app.use('/api/auth', authRoutes);
