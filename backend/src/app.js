@@ -1,12 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import graphRoutes from './routes/graphRoutes.js';
 
 dotenv.config();
 
 const app = express();
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        res.status(500).json({ message: "Database connection failed", error: err.message });
+    }
+});
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
