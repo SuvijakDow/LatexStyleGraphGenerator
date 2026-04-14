@@ -1,0 +1,235 @@
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc;
+}
+
+.code-font {
+  font-family: "Fira Code", monospace;
+}
+
+pre::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.toast-enter {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.disabled-label {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+input[type="range"] {
+  @apply accent-blue-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer;
+}
+
+/* Custom MathLive Styling */
+math-field {
+  font-size: 1.2rem;
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  color: #1e293b;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+
+  /* ปรับสีตอนคลุมดำ / ไฮไลท์ก้อนสมการให้เป็นสีฟ้าอ่อน */
+  --selection-background-color: rgba(59, 130, 246, 0.25);
+  --selection-color: #1e293b;
+
+  /* ปรับสีพื้นหลังตอนที่เคอร์เซอร์พิมพ์อยู่ข้างใน (เช่น ในเศษส่วน หรือ รูท) */
+  --contains-highlight-background-color: rgba(59, 130, 246, 0.12);
+}
+
+math-field:focus-within {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Preview Math Field (Read Only) */
+math-field.preview-math {
+  font-size: 1.05rem;
+  width: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  color: #64748b;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+math-field.preview-math:focus-within {
+  box-shadow: none;
+  border: none;
+  outline: none;
+}
+
+/* ซ่อนปุ่ม Keyboard ดั้งเดิมของ MathLive */
+math-field::part(virtual-keyboard-toggle) {
+  display: none;
+}
+
+/* Scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 10px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Custom Keyboard Styles (Desmos Style) */
+.kbd-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #383a40;
+  color: #e2e8f0;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.1s;
+  user-select: none;
+}
+
+.kbd-btn:hover {
+  background-color: #4a4d55;
+}
+
+.kbd-btn:active {
+  background-color: #5c606a;
+  transform: translateY(1px);
+}
+
+.kbd-num {
+  background-color: #4e525a;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.kbd-num:hover {
+  background-color: #5e626b;
+}
+
+.kbd-action {
+  background-color: #2563eb;
+  color: white;
+}
+
+.kbd-action:hover {
+  background-color: #1d4ed8;
+}
+
+/* Chevron Animation */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Tab Navigation Styles */
+.tab-active {
+  background-color: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+}
+
+.tab-inactive {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tab-inactive:hover {
+  color: #334155;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 639px) {
+  math-field {
+    font-size: 1.05rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  math-field.preview-math {
+    font-size: 0.9rem;
+  }
+
+  .kbd-btn {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .kbd-num {
+    font-size: 1rem;
+  }
+}
