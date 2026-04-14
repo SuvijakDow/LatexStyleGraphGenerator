@@ -5,7 +5,7 @@ import { renderPoints, addPoint, removePoint, movePoint, togglePointVisibility, 
 import { switchTab, showCustomToast, slideDown, slideUp } from './ui/utils.js';
 import { onFocusMathField, hideKeyboard, insertMath, executeMathCmd, toggleFunctionsPanel } from './ui/keyboard.js';
 import { generateCode } from './core/generator.js';
-import { login, register, logout, getToken, getUser, loginWithGoogle } from './api/auth.js';
+import { login, register, logout, getToken, getUser, loginWithGoogle, updateProfile } from './api/auth.js';
 import { saveGraph, getMyGraphs, loadSharedGraph, updateGraph, deleteGraph } from './api/graph.js';
 
 // Attach globally needed functions to window so inline HTML onclick="" still works
