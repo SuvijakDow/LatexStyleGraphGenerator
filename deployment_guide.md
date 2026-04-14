@@ -1,71 +1,65 @@
-# 🚀 Guide: Deploying LatexStyleGraph to Production
+# 🚀 Guide: Deploying to Vercel (No Credit Card Required)
 
-This guide explains how to host your project online for free so it runs 24/7 on any device.
+This guide explains how to host your entire project (Frontend + Backend) on Vercel for free.
 
-## Prerequisites
-1.  **GitHub**: Your code must be pushed to your repository: `https://github.com/SuvijakDow/LatexStyleGraphGenerator.git`.
-2.  **MongoDB Atlas**: Your database is already active and set up in your `.env`.
+## Why Vercel?
+- **No Credit Card**: Vercel's Hobby tier does not require a card to get started.
+- **Single URL**: Both your website and your API live on the same domain.
+- **Auto-Sync**: Every time you `git push`, your website updates automatically.
 
 ---
 
-## Part 1: Deploying the Backend (API) on Render.com
+## Part 1: Prerequisites
+1.  **GitHub**: Your code must be pushed to your repository: `https://github.com/SuvijakDow/LatexStyleGraphGenerator.git`.
+2.  **MongoDB Atlas**: Ensure your database is active.
 
-Render is perfect for hosting Node.js servers.
+---
 
-1.  **Sign Up**: Go to [Render.com](https://render.com) and sign up using your GitHub account.
-2.  **Create New Web Service**:
-    - Click **New +** -> **Web Service**.
-    - Connect your GitHub repository.
-3.  **Configure Web Service**:
-    - **Name**: `latexstylegraphgenerator-backend`
-    - **Environment**: `Node`
-    - **Build Command**: `npm install` (Standard for backend)
-    - **Start Command**: `node src/server.js`
+## Part 2: Deploying to Vercel
+
+1.  **Sign Up**: Go to [Vercel.com](https://vercel.com) and sign up using your GitHub account.
+2.  **Create New Project**:
+    - Click **Add New** -> **Project**.
+    - Find your `LatexStyleGraphGenerator` repository and click **Import**.
+3.  **Configure Project**:
+    - **Framework Preset**: Select **Other**.
+    - **Root Directory**: Leave it as **Root** (don't select frontend).
 4.  **Environment Variables**:
-    - Click **Environment** -> **Add Environment Variable**.
-    - Add these keys from your local `.env`:
-        - `MONGODB_URI`: (Copy your Atlas string)
+    - Scroll down to the **Environment Variables** section.
+    - Add these keys and values from your local `.env`:
+        - `MONGODB_URI`: (Your Atlas connection string)
         - `JWT_SECRET`: (Your secret key)
         - `GOOGLE_CLIENT_ID`: (Your Google ID)
-5.  **Deploy**: Click **Create Web Service**.
-    - Once finished, Render will give you a URL like: `https://latexstylegraphgenerator-backend.onrender.com`.
+5.  **Deploy**: Click **Deploy**.
+    - Vercel will build your project. Once finished, you'll get a URL like `https://latex-style-graph-generator.vercel.app`.
 
 ---
 
-## Part 2: Deploying the Frontend (UI) on Vercel.com
+## Part 3: Google Login Setup (Crucial)
 
-Vercel is the best way to host static HTML/JS websites.
+Since the URL has changed, you need to tell Google that this new URL is allowed to log in users.
 
-1.  **Sign Up**: Go to [Vercel.com](https://vercel.com) and sign up with GitHub.
-2.  **Import Project**:
-    - Click **Add New** -> **Project**.
-    - Import your GitHub repository.
-3.  **Configure Project**:
-    - **Framework Preset**: select `Other` (since it's vanilla HTML/JS).
-    - **Root Directory**: `frontend` (Important! Select the frontend folder).
-    - **Build Settings**: Leave defaults (no build command needed).
-4.  **Deploy**: Click **Deploy**.
-    - You will get a URL like: `https://latex-style-graph-generator.vercel.app`.
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2.  Find your **OAuth 2.0 Client ID**.
+3.  Add your new Vercel URL to:
+    - **Authorized JavaScript origins**
+    - **Authorized redirect URIs** (if applicable)
+4.  Save changes. (It may take a few minutes to update).
 
 ---
 
-## Part 3: Connecting Everything
+## Part 4: How it Works Locally vs Production
 
-Once you have your **Render URL**, you must update your frontend config so it knows where to find the server.
-
-1.  Open [frontend/js/api/config.js](file:///c:/Users/Dell-Laptop14/Documents/Website%20Coding/LatexStyleGraphGenerator/frontend/js/api/config.js).
-2.  Make sure the production URL matches your Render URL.
-3.  **Commit and Push** your changes to GitHub.
-    - Vercel and Render will **automatically redeploy** your site with the latest code!
+- **Locally**: You run `npm run dev` in the backend and open `index.html`. It uses `localhost:5000`.
+- **Production**: Vercel sees the `vercel.json` file we created and automatically routes your traffic correctly. No need to change any URLs in the code ever again!
 
 ---
+> [!TIP]
+> **Pushing Changes**: Now that everything is set up, just run these commands whenever you want to update your site:
+> ```bash
+> git add .
+> git commit -m "Your update message"
+> git push origin main
+> ```
 
-## Troubleshooting Tips
-
-- **White Screen?** Check the Browser Console (F12) for errors.
-- **Login doesn't work?** Remember to add your Vercel URL to the **Authorized JavaScript Origins** in your Google Cloud Console (Credentials).
-- **Backend sleeping?** Free Render instances sleep after 15 mins of inactivity. The first request after a long break might take 30-50 seconds to boot up.
-
----
-> [!IMPORTANT]
-> **Don't Forget!** Always push your changes to GitHub to keep your live site up to date.
+**Your site is now live! 🎊**
