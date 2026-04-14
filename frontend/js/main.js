@@ -336,8 +336,6 @@ async function initApp() {
                   const colorIdx = Math.abs(displayName.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % colors.length);
                   avatarContainer.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-inner ${colors[colorIdx]}`;
               }
-
-              }
           }
       } else {
           authBtnText.innerText = 'Login';
