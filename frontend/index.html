@@ -51,15 +51,18 @@
           <i data-lucide="line-chart" class="w-5 h-5 sm:w-7 sm:h-7 text-blue-600"></i>
           <h1 class="font-bold text-base sm:text-xl tracking-tight text-slate-800 hover:opacity-80 cursor-pointer whitespace-nowrap"
             onclick="window.location.href='/'">
-            LatexStyle<span class="text-slate-400 font-normal">Graph</span>
+            <span class="hidden min-[450px]:inline">LatexStyle</span><span class="hidden lg:inline text-slate-400 font-normal">Graph</span>
           </h1>
         </div>
         <div
-          class="flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-2 py-1 rounded-md border border-slate-200 focus-within:border-blue-400 focus-within:bg-white transition-colors flex-shrink min-w-0">
+          class="flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-2 py-1 rounded-md border border-slate-200 focus-within:border-blue-400 focus-within:bg-white transition-colors flex-shrink min-w-0 relative">
           <input type="text" id="currentGraphNameDisplay" value="Untitled Graph"
-            class="bg-transparent outline-none w-full min-w-[50px] max-w-[120px] sm:max-w-[200px] hover:text-blue-600 focus:text-slate-800" />
-          <span id="dirtyIndicator" class="text-amber-500 font-bold opacity-0 transition-opacity"
-            title="Unsaved changes">*</span>
+            class="bg-transparent outline-none w-full min-w-[50px] max-w-[80px] min-[400px]:max-w-[120px] sm:max-w-[200px] hover:text-blue-600 focus:text-slate-800" />
+          <span id="dirtyIndicator" class="absolute -top-1 -right-1 flex h-2 w-2 items-center justify-center opacity-0 transition-opacity"
+            title="Unsaved changes">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+          </span>
         </div>
       </div>
       <div class="flex items-center gap-1 sm:gap-1.5 lg:gap-2">
@@ -68,8 +71,8 @@
           <i data-lucide="file-plus" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden lg:inline">New</span>
         </button>
         <button id="saveShareBtn"
-          class="flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors py-1 px-2.5 rounded-lg shadow-sm">
-          <i data-lucide="save" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Save</span>
+          class="flex items-center gap-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors py-1.5 px-2.5 rounded-lg shadow-sm">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i> <span class="hidden md:inline">Save</span>
         </button>
         <div class="relative">
           <button id="userDisplay"
@@ -459,15 +462,15 @@
 
   <!-- Footer -->
   <footer
-    class="w-full py-6 sm:py-8 text-center text-[10px] sm:text-xs text-slate-400 bg-[#1d1f21] border-t border-slate-800 mt-auto">
-    <div class="flex flex-col items-center justify-center gap-1 sm:gap-1.5">
+    class="w-full py-4 sm:py-6 text-center text-[9px] min-[400px]:text-[10px] sm:text-xs text-slate-400 bg-[#1d1f21] border-t border-slate-800 mt-auto">
+    <div class="flex flex-col items-center justify-center gap-0.5 sm:gap-1.5">
       <p>
         Crafted by
         <span class="font-bold text-slate-100">Leo Suvijak Dowrueng</span>
         with a whole lot of help from
         <span class="font-bold text-blue-400">Antigravity</span> ✨
       </p>
-      <p class="text-[9px] sm:text-[10px] opacity-60">
+      <p class="text-[8px] min-[400px]:text-[9px] sm:text-[10px] opacity-60">
         © 2026 (Just kidding, copyright isn't that serious here. Feel free to
         explore!)
       </p>

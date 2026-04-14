@@ -1,5 +1,5 @@
 import { appState, DEFAULTS, resetFunctionsState, resetPointsState, markDirty, clearDirty } from './state.js';
-import { initWorker, updateUI } from './core/engine.js';
+import { initWorker, updateUI, exportChart } from './core/engine.js';
 import { renderFunctions, addFunction, removeFunction, moveFunction, toggleFunctionVisibility, duplicateFunction, updateFn, updateFnLive } from './ui/functionsPanel.js';
 import { renderPoints, addPoint, removePoint, movePoint, togglePointVisibility, duplicatePoint, updatePoint, updatePointLive } from './ui/pointsPanel.js';
 import { switchTab, showCustomToast, slideDown, slideUp } from './ui/utils.js';
@@ -908,9 +908,41 @@ async function initApp() {
   // Initialize Web Worker
   initWorker();
   
-  if (window.lucide) {
-      window.lucide.createIcons();
-  }
+    // Export Buttons
+    const handleExport = async (format) => {
+        try {
+            showCustomToast(`Preparing ${format.toUpperCase()}...`);
+            const base64 = await exportChart(format);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const fileName = `${appState.currentGraphTitle.replace(/\s+/g, '_')}_${timestamp}.${format}`;
+            
+            if (format === 'svg') {
+                link.href = 'data:image/svg+xml;base64,' + base64;
+            } else if (format === 'pdf') {
+                link.href = 'data:application/pdf;base64,' + base64;
+            } else {
+                link.href = 'data:image/png;base64,' + base64;
+            }
+            
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showCustomToast(`${format.toUpperCase()} downloaded!`);
+        } catch (err) {
+            console.error(err);
+            showCustomToast("Export failed.", true);
+        }
+    };
+
+    document.getElementById('dlPngBtn').onclick = () => handleExport('png');
+    document.getElementById('dlSvgBtn').onclick = () => handleExport('svg');
+    document.getElementById('dlPdfBtn').onclick = () => handleExport('pdf');
+
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
 }
 
 window.onload = initApp;

@@ -246,7 +246,22 @@ math-field::part(virtual-keyboard-toggle) {
   }
 
   header h1 span {
-    display: none; /* Hide "Graph" suffix on very small screens */
+    display: none; /* Hide "Graph" suffix on small screens */
+  }
+
+  /* Make sure the name input doesn't shrink too much but also doesn't push others */
+  #currentGraphNameDisplay {
+    max-width: 80px !important;
+  }
+}
+
+@media (max-width: 450px) {
+  header h1 {
+    display: flex;
+    align-items: center;
+  }
+  header h1 span {
+    display: none !important;
   }
 }
 
@@ -265,8 +280,13 @@ math-field::part(virtual-keyboard-toggle) {
 
 @media (max-width: 639px) {
   header button {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  header .max-w-\[1400px\] {
+    gap: 0.5rem !important;
   }
 }
 

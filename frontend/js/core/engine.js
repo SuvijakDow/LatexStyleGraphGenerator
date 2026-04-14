@@ -24,6 +24,24 @@ export const debouncedRunPreview = (() => {
   };
 })();
 
+export async function exportChart(format = 'png') {
+  if (!appState.pyodideWorker) throw new Error("Graph Engine not loaded");
+  
+  const code = generateCode();
+  // For SVG/PDF, we don't need base64 if we manage raw bytes, but Pyodide runPython extension usually returns JS values.
+  // We'll stick to base64 for simplicity across all formats.
+  const script =
+    "import io, base64\nimport matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nplt.close('all')\n" +
+    code.replace("plt.show()", "") +
+    `\nbuf = io.BytesIO()\nplt.savefig(buf, format='${format}', bbox_inches='tight', dpi=300)\nbuf.seek(0)\nbase64.b64encode(buf.read()).decode('utf-8')`;
+
+  return new Promise((resolve, reject) => {
+    appState.exportResolve = resolve;
+    appState.exportReject = reject;
+    appState.pyodideWorker.postMessage({ type: "export", code: script });
+  });
+}
+
 export function updateUI(delay = 800) {
   handleVisibilityLocks();
   const code = generateCode();
