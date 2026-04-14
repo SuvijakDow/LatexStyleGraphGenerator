@@ -348,7 +348,62 @@ async function initApp() {
 
   updateAuthUI();
 
+  // Helper to resize and compress image to Base64
+  const resizeImage = (file, maxWidth = 300, maxHeight = 300) => {
+      return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => {
+              const img = new Image();
+              img.src = event.target.result;
+              img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  let width = img.width;
+                  let height = img.height;
+
+                  if (width > height) {
+                      if (width > maxWidth) {
+                          height *= maxWidth / width;
+                          width = maxWidth;
+                      }
+                  } else {
+                      if (height > maxHeight) {
+                          width *= maxHeight / height;
+                          height = maxHeight;
+                      }
+                  }
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(img, 0, 0, width, height);
+                  resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+              };
+              img.onerror = reject;
+          };
+          reader.onerror = reject;
+      });
+  };
+
+  let pendingAvatarBase64 = null;
+
   // Profile Modal Logic
+  const profileFileInput = document.getElementById('profileFileInput');
+  const modalAvatarImg = document.getElementById('modalAvatarImg');
+  const modalInitials = document.getElementById('modalInitials');
+
+  profileFileInput.onchange = async (e) => {
+      if (e.target.files && e.target.files[0]) {
+          try {
+              pendingAvatarBase64 = await resizeImage(e.target.files[0]);
+              modalAvatarImg.src = pendingAvatarBase64;
+              modalAvatarImg.classList.remove('hidden');
+              modalInitials.classList.add('hidden');
+          } catch (err) {
+              showCustomToast("Error processing image", true);
+          }
+      }
+  };
+
   document.getElementById('userDisplay').onclick = () => {
       const user = getUser();
       if (!user) return;
@@ -357,22 +412,39 @@ async function initApp() {
       document.getElementById('profileFullName').value = user.fullName || '';
       document.getElementById('profilePicture').value = user.profilePicture || '';
       document.getElementById('profileUsername').value = user.username;
+      
+      // Update preview in modal
+      const displayName = user.fullName || user.username;
+      if (user.profilePicture) {
+          modalAvatarImg.src = user.profilePicture;
+          modalAvatarImg.classList.remove('hidden');
+          modalInitials.classList.add('hidden');
+      } else {
+          modalAvatarImg.classList.add('hidden');
+          modalInitials.classList.remove('hidden');
+          modalInitials.innerText = displayName.charAt(0).toUpperCase();
+      }
+      
+      pendingAvatarBase64 = null;
       modal.classList.remove('hidden');
   };
 
   document.getElementById('profileForm').onsubmit = async (e) => {
       e.preventDefault();
       const fullName = document.getElementById('profileFullName').value.trim();
-      const profilePicture = document.getElementById('profilePicture').value.trim();
-      const username = document.getElementById('profileUsername').value.trim();
+      const urlPicture = document.getElementById('profilePicture').value.trim();
+      
+      // File upload takes precedence over URL
+      const finalPicture = pendingAvatarBase64 || urlPicture;
       
       const btn = document.getElementById('profileSubmitBtn');
       const oT = btn.innerHTML;
       btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...`;
       
       try {
-          await updateProfile(username, fullName, profilePicture);
-          showCustomToast("Profile updated successfully!");
+          // Pass null for username as it's no longer changeable
+          await updateProfile(null, fullName, finalPicture);
+          showCustomToast("Profile updated successfully! ✨");
           document.getElementById('profileModal').classList.add('hidden');
           updateAuthUI();
       } catch (error) {
