@@ -233,3 +233,34 @@ math-field::part(virtual-keyboard-toggle) {
     font-size: 1rem;
   }
 }
+
+/* Header Responsiveness Fixes */
+@media (max-width: 768px) {
+  #currentGraphNameDisplay {
+    max-width: 100px !important;
+  }
+  
+  header .max-w-\[1400px\] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  header h1 span {
+    display: none; /* Hide "Graph" suffix on very small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  header div.flex-col {
+    gap: 0px !important;
+  }
+  
+  #currentGraphNameDisplay {
+    font-size: 10px;
+    max-width: 70px !important;
+  }
+
+  header div.gap-1\.5 {
+    gap: 0.25rem !important;
+  }
+}

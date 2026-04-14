@@ -19,6 +19,7 @@ export const registerUser = async (req, res) => {
             res.status(201).json({
                 _id: user.id,
                 username: user.username,
+                fullName: user.fullName,
                 token: generateToken(user._id)
             });
         }
@@ -35,6 +36,7 @@ export const loginUser = async (req, res) => {
             res.json({
                 _id: user.id,
                 username: user.username,
+                fullName: user.fullName,
                 token: generateToken(user._id)
             });
         } else {
@@ -62,9 +64,37 @@ export const googleLogin = async (req, res) => {
         res.json({
             _id: user.id,
             username: user.username,
+            fullName: user.fullName,
             token: generateToken(user._id)
         });
     } catch (error) {
         res.status(401).json({ message: 'Google Auth Failed: ' + error.message });
+    }
+};
+
+export const updateProfile = async (req, res) => {
+    try {
+        const { username, fullName } = req.body;
+        const user = await User.findById(req.user._id);
+        
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (username && username !== user.username) {
+            const exists = await User.findOne({ username });
+            if (exists) return res.status(400).json({ message: 'Username already taken' });
+            user.username = username;
+        }
+
+        if (fullName !== undefined) user.fullName = fullName;
+
+        await user.save();
+        res.json({
+            _id: user.id,
+            username: user.username,
+            fullName: user.fullName,
+            token: generateToken(user._id)
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

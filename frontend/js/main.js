@@ -306,7 +306,9 @@ async function initApp() {
           if (userDisplay && userNameText) {
               userDisplay.classList.remove('hidden');
               userDisplay.classList.add('flex');
-              userNameText.innerText = user.username.split('@')[0]; // Show email prefix or full username
+              // Prefer Full Name, then Email Prefix, then Username
+              const displayName = user.fullName || (user.username.includes('@') ? user.username.split('@')[0] : user.username);
+              userNameText.innerText = displayName;
           }
       } else {
           authBtnText.innerText = 'Login';
@@ -318,6 +320,46 @@ async function initApp() {
   };
 
   updateAuthUI();
+
+  // Profile Modal Logic
+  document.getElementById('userDisplay').onclick = () => {
+      const user = getUser();
+      if (!user) return;
+      
+      const modal = document.getElementById('profileModal');
+      document.getElementById('profileFullName').value = user.fullName || '';
+      document.getElementById('profileUsername').value = user.username;
+      modal.classList.remove('hidden');
+  };
+
+  document.getElementById('profileForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('profileFullName').value.trim();
+      const username = document.getElementById('profileUsername').value.trim();
+      
+      const btn = document.getElementById('profileSubmitBtn');
+      const oT = btn.innerHTML;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...`;
+      
+      try {
+          await updateProfile(username, fullName);
+          showCustomToast("Profile updated successfully!");
+          document.getElementById('profileModal').classList.add('hidden');
+          updateAuthUI();
+      } catch (error) {
+          showCustomToast(error.message, true);
+      } finally {
+          btn.innerHTML = oT;
+      }
+  };
+
+  // Copy Feedback Enhancement
+  const originalCopyBtn = document.getElementById('copyShareBtn');
+  if (originalCopyBtn) {
+      originalCopyBtn.addEventListener('click', () => {
+          showCustomToast("Link copied to clipboard! 📋");
+      });
+  }
 
   // Initialize Google Login (Requires Client ID)
   // THE USER MUST REPLACE "YOUR_CLIENT_ID_HERE" WITH THEIR ACTUAL GOOGLE CLIENT ID!

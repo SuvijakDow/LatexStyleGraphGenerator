@@ -51,3 +51,19 @@ export const getUser = () => {
 };
 
 export const getToken = () => localStorage.getItem('mathToken');
+
+export const updateProfile = async (username, fullName) => {
+    const token = getToken();
+    const res = await fetch(`${API_URL}/profile`, {
+        method: 'PUT',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ username, fullName })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Profile update failed');
+    localStorage.setItem('mathUser', JSON.stringify(data));
+    return data;
+};
