@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Fullstack Mathematical Graph Generator",
+  "scripts": {
+    "start": "node api/index.js",
+    "build": "echo 'Build complete'"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
