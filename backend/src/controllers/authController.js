@@ -61,7 +61,24 @@ export const googleLogin = async (req, res) => {
         let user = await User.findOne({ username: payload.email });
         if (!user) {
             const randomPassword = Math.random().toString(36).slice(-10);
-            user = await User.create({ username: payload.email, password: randomPassword });
+            user = await User.create({ 
+                username: payload.email, 
+                password: randomPassword,
+                fullName: payload.name || '',
+                profilePicture: payload.picture || ''
+            });
+        } else {
+            // Sync profile data if it's missing
+            let updated = false;
+            if (!user.fullName && payload.name) {
+                user.fullName = payload.name;
+                updated = true;
+            }
+            if (!user.profilePicture && payload.picture) {
+                user.profilePicture = payload.picture;
+                updated = true;
+            }
+            if (updated) await user.save();
         }
         res.json({
             _id: user.id,
@@ -77,23 +94,43 @@ export const googleLogin = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
+        console.log("1. Starting updateProfile controller...");
         const { fullName, profilePicture } = req.body;
+        console.log(`2. Received Payload: fullName="${fullName}", pfpLength=${profilePicture ? profilePicture.length : 0}`);
+        
+        if (!req.user || !req.user._id) {
+            console.log("3. Error: req.user is missing");
+            return res.status(401).json({ message: 'User object missing in request' });
+        }
+
+        console.log(`3. Finding user with ID: ${req.user._id}`);
         const user = await User.findById(req.user._id);
         
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        if (!user) {
+            console.log("4. User not found in DB");
+            return res.status(404).json({ message: 'User not found' });
+        }
 
+        console.log("4. Updating fields...");
         if (fullName !== undefined) user.fullName = fullName;
         if (profilePicture !== undefined) user.profilePicture = profilePicture;
 
+        console.log("5. Saving user to MongoDB...");
         await user.save();
-        res.json({
+        console.log("6. Save successful!");
+
+        const updatedUser = {
             _id: user.id,
             username: user.username,
             fullName: user.fullName,
             profilePicture: user.profilePicture,
             token: generateToken(user._id)
-        });
+        };
+        
+        console.log("7. Sending response...");
+        res.json(updatedUser);
     } catch (error) {
+        console.error("!!! CONTROLLER CRASHED:", error);
         res.status(500).json({ message: error.message });
     }
 };

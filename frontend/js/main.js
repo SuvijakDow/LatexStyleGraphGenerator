@@ -302,16 +302,17 @@ async function initApp() {
       const authBtnText = document.getElementById('authBtnText');
       
       if (user) {
-          authBtnText.innerText = 'My Graphs';
+          authBtn.classList.add('hidden');
           if (userDisplay && userNameText) {
               userDisplay.classList.remove('hidden');
               userDisplay.classList.add('flex');
               
-              // Prefer Full Name, then Email Prefix, then Username
               const displayName = user.fullName || (user.username.includes('@') ? user.username.split('@')[0] : user.username);
               userNameText.innerText = displayName;
 
-              // Handle Avatar/Initials
+              const emailDisplay = document.getElementById('dropdownUserEmail');
+              if (emailDisplay) emailDisplay.innerText = user.username;
+
               const avatarImg = document.getElementById('userAvatarImg');
               const initialsSpan = document.getElementById('userInitials');
               const avatarContainer = document.getElementById('userAvatarContainer');
@@ -331,18 +332,18 @@ async function initApp() {
                   initialsSpan.classList.remove('hidden');
                   initialsSpan.innerText = displayName.charAt(0).toUpperCase();
                   
-                  // Palette for initials
                   const colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-blue-600', 'bg-rose-600', 'bg-amber-600', 'bg-teal-600'];
                   const colorIdx = Math.abs(displayName.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % colors.length);
-                  avatarContainer.className = `w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-inner ${colors[colorIdx]}`;
+                  avatarContainer.className = `w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-inner ${colors[colorIdx]}`;
               }
           }
       } else {
-          authBtnText.innerText = 'Login';
+          authBtn.classList.remove('hidden');
           if (userDisplay) {
               userDisplay.classList.add('hidden');
               userDisplay.classList.remove('flex');
           }
+          document.getElementById('userDropdown')?.classList.add('hidden');
       }
   };
 
@@ -404,16 +405,28 @@ async function initApp() {
       }
   };
 
-  document.getElementById('userDisplay').onclick = () => {
+  // Dropdown Logic
+  const userDropdown = document.getElementById('userDropdown');
+  userDisplay.onclick = (e) => {
+      e.stopPropagation();
+      userDropdown.classList.toggle('hidden');
+  };
+
+  window.addEventListener('click', () => {
+      userDropdown.classList.add('hidden');
+  });
+
+  userDropdown.onclick = (e) => e.stopPropagation();
+
+  document.getElementById('dropdownProfileBtn').onclick = () => {
+      userDropdown.classList.add('hidden');
       const user = getUser();
       if (!user) return;
       
       const modal = document.getElementById('profileModal');
       document.getElementById('profileFullName').value = user.fullName || '';
-      document.getElementById('profilePicture').value = user.profilePicture || '';
       document.getElementById('profileUsername').value = user.username;
       
-      // Update preview in modal
       const displayName = user.fullName || user.username;
       if (user.profilePicture) {
           modalAvatarImg.src = user.profilePicture;
@@ -429,28 +442,69 @@ async function initApp() {
       modal.classList.remove('hidden');
   };
 
+  document.getElementById('dropdownGraphsBtn').onclick = () => {
+      userDropdown.classList.add('hidden');
+      document.getElementById('myGraphsModal').classList.remove('hidden');
+      loadMyGraphsList();
+  };
+
+  const performLogout = () => {
+      logout();
+      updateAuthUI();
+      showCustomToast("Logged out successfully");
+  };
+
+  document.getElementById('dropdownLogoutBtn').onclick = () => {
+      userDropdown.classList.add('hidden');
+      if (appState.isDirty) {
+          const m = document.getElementById('unsavedChangesModal');
+          m.classList.remove('hidden');
+          
+          document.getElementById('unsavedCancelBtn').onclick = () => m.classList.add('hidden');
+          document.getElementById('unsavedConfirmBtn').onclick = () => {
+              m.classList.add('hidden');
+              performLogout();
+          };
+          
+          document.getElementById('unsavedSaveNewBtn').onclick = () => {
+              m.classList.add('hidden');
+              appState.pendingLogoutAction = true;
+              document.getElementById('saveShareBtn').click();
+          };
+      } else {
+          performLogout();
+      }
+  };
+
   document.getElementById('profileForm').onsubmit = async (e) => {
       e.preventDefault();
       const fullName = document.getElementById('profileFullName').value.trim();
-      const urlPicture = document.getElementById('profilePicture').value.trim();
       
-      // File upload takes precedence over URL
-      const finalPicture = pendingAvatarBase64 || urlPicture;
+      const modalAvatarImg = document.getElementById('modalAvatarImg');
+      let finalPicture = pendingAvatarBase64;
+      
+      // If no new base64, check if there's an existing image displayed
+      if (!finalPicture && modalAvatarImg && !modalAvatarImg.classList.contains('hidden')) {
+          finalPicture = modalAvatarImg.src;
+      }
       
       const btn = document.getElementById('profileSubmitBtn');
       const oT = btn.innerHTML;
       btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...`;
       
       try {
-          // Pass null for username as it's no longer changeable
+          console.log("Submitting profile update...");
           await updateProfile(null, fullName, finalPicture);
           showCustomToast("Profile updated successfully! ✨");
           document.getElementById('profileModal').classList.add('hidden');
           updateAuthUI();
       } catch (error) {
-          showCustomToast(error.message, true);
+          console.error("Profile Update Error:", error);
+          alert(`Error saving profile: ${error.message}`); 
+          showCustomToast(`Failed: ${error.message}`, true);
       } finally {
           btn.innerHTML = oT;
+          if (window.lucide) window.lucide.createIcons();
       }
   };
 
@@ -532,12 +586,7 @@ async function initApp() {
       }
   };
 
-  document.getElementById('logoutBtn').onclick = () => {
-      logout();
-      document.getElementById('myGraphsModal').classList.add('hidden');
-      updateAuthUI();
-      showCustomToast('Logged out');
-  };
+
 
   window.renameSavedGraph = async (shortId, currentTitle) => {
       const modal = document.getElementById('renameGraphModal');
@@ -652,7 +701,7 @@ async function initApp() {
           `).join('');
           if (window.lucide) window.lucide.createIcons();
       } catch (e) {
-          gList.innerHTML = '<div class="text-center col-span-full py-8 text-red-400">Error loading graphs</div>';
+      gList.innerHTML = '<div class="text-center col-span-full py-8 text-red-400">Error loading graphs</div>';
       }
   };
 
@@ -700,6 +749,50 @@ async function initApp() {
       const central = document.querySelector('input[name="axisStyle"]:checked');
       settings.axisStyle = central ? central.value : 'central';
 
+      const performSave = async (overwriteFlag) => {
+          btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ${overwriteFlag ? 'Overwriting' : 'Saving'}`;
+          try {
+              const res = await saveGraph(title, appState.functionsState, appState.pointsState, settings, true, overwriteFlag);
+              
+              appState.currentGraphId = res.shortId;
+              appState.currentGraphTitle = res.title;
+              clearDirty();
+              
+              document.getElementById('shareModal').classList.remove('hidden');
+              const shareUrl = window.location.origin + window.location.pathname + "?graph=" + res.shortId;
+              window.history.pushState({}, '', shareUrl);
+              document.getElementById('shareUrlInput').value = shareUrl;
+              btn.innerHTML = oT;
+              if (appState.pendingNewGraphAction) {
+                  appState.pendingNewGraphAction = false;
+                  setTimeout(performNewGraph, 500);
+              }
+              if (appState.pendingLogoutAction) {
+                  appState.pendingLogoutAction = false;
+                  setTimeout(performLogout, 500);
+              }
+          } catch (err) {
+              if (err.message === "DUPLICATE_TITLE" && !overwriteFlag) {
+                  btn.innerHTML = oT;
+                  const modal = document.getElementById('overwriteModal');
+                  document.getElementById('overwriteMsg').innerText = `A graph named "${title}" already exists. Do you want to overwrite it?`;
+                  modal.classList.remove('hidden');
+                  
+                  document.getElementById('overwriteCancelBtn').onclick = () => {
+                      modal.classList.add('hidden');
+                  };
+                  
+                  document.getElementById('overwriteConfirmBtn').onclick = () => {
+                      modal.classList.add('hidden');
+                      performSave(true);
+                  };
+              } else {
+                  showCustomToast(err.message, true);
+                  btn.innerHTML = oT;
+              }
+          }
+      };
+
       if (appState.currentGraphId) {
           const performUpdate = async (overwriteFlag) => {
               btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ${overwriteFlag ? 'Overwriting' : 'Saving'}`;
@@ -726,6 +819,10 @@ async function initApp() {
                       appState.pendingNewGraphAction = false;
                       setTimeout(performNewGraph, 500);
                   }
+                  if (appState.pendingLogoutAction) {
+                      appState.pendingLogoutAction = false;
+                      setTimeout(performLogout, 500);
+                  }
               } catch (err) {
                   if (err.message === "DUPLICATE_TITLE" && !overwriteFlag) {
                       btn.innerHTML = oT;
@@ -741,6 +838,11 @@ async function initApp() {
                           modal.classList.add('hidden');
                           performUpdate(true);
                       };
+                  } else if (err.message === "Graph not found") {
+                      // Forking logic: clear ID and save as new immediately
+                      appState.currentGraphId = null;
+                      showCustomToast("Saving as a new copy in your library... ✨", true);
+                      return await performSave(false);
                   } else {
                       showCustomToast("Save Error: " + err.message, true);
                   }
@@ -754,46 +856,6 @@ async function initApp() {
           };
           await performUpdate(false);
       } else {
-          const performSave = async (overwriteFlag) => {
-              btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ${overwriteFlag ? 'Overwriting' : 'Saving'}`;
-              try {
-                  const res = await saveGraph(title, appState.functionsState, appState.pointsState, settings, true, overwriteFlag);
-                  
-                  appState.currentGraphId = res.shortId;
-                  appState.currentGraphTitle = res.title;
-                  clearDirty();
-                  
-                  document.getElementById('shareModal').classList.remove('hidden');
-                  const shareUrl = window.location.origin + window.location.pathname + "?graph=" + res.shortId;
-                  window.history.pushState({}, '', shareUrl);
-                  document.getElementById('shareUrlInput').value = shareUrl;
-                  btn.innerHTML = oT;
-                  if (appState.pendingNewGraphAction) {
-                      appState.pendingNewGraphAction = false;
-                      setTimeout(performNewGraph, 500);
-                  }
-              } catch (err) {
-                  if (err.message === "DUPLICATE_TITLE" && !overwriteFlag) {
-                      btn.innerHTML = oT;
-                      const modal = document.getElementById('overwriteModal');
-                      document.getElementById('overwriteMsg').innerText = `A graph named "${title}" already exists. Do you want to overwrite it?`;
-                      modal.classList.remove('hidden');
-                      
-                      document.getElementById('overwriteCancelBtn').onclick = () => {
-                          modal.classList.add('hidden');
-                      };
-                      
-                      document.getElementById('overwriteConfirmBtn').onclick = () => {
-                          modal.classList.add('hidden');
-                          performSave(true);
-                      };
-                  } else {
-                      showCustomToast(err.message, true);
-                      btn.innerHTML = oT;
-                  }
-              }
-          };
-
           await performSave(false);
       }
   };
@@ -835,8 +897,9 @@ async function initApp() {
           
           appState.currentGraphId = g.shortId;
           appState.currentGraphTitle = g.title || "Shared Graph";
-          clearDirty();
-          showCustomToast("Loaded shared graph '" + g.title + "'");
+          document.getElementById('currentGraphNameDisplay').value = appState.currentGraphTitle;
+          markDirty();
+          showCustomToast("Loaded shared graph '" + (g.title || "Untitled") + "'");
       } catch (e) {
           showCustomToast("Error loading shared graph.", true);
       }

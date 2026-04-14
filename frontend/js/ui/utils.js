@@ -66,9 +66,9 @@ export function showCustomToast(msg, isWarning = false) {
     ? `<i data-lucide="alert-triangle" class="w-4 h-4 sm:w-5 sm:h-5"></i>`
     : `<i data-lucide="check-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>`;
   if (window.lucide) lucide.createIcons();
-  t.classList.remove("translate-y-20", "opacity-0");
+  t.classList.remove("translate-y-32", "opacity-0");
   setTimeout(() => {
-    t.classList.add("translate-y-20", "opacity-0");
+    t.classList.add("translate-y-32", "opacity-0");
   }, 5000);
 }
 

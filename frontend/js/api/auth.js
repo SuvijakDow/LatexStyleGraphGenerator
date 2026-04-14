@@ -60,10 +60,18 @@ export const updateProfile = async (username, fullName, profilePicture) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ username, fullName, profilePicture })
+        body: JSON.stringify({ 
+            ...(username && { username }), 
+            fullName, 
+            profilePicture 
+        })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Profile update failed');
+    
+    if (!res.ok) {
+        throw new Error(data.message || `Server Error: ${res.status}`);
+    }
+    
     localStorage.setItem('mathToken', data.token); // Sync the new token
     localStorage.setItem('mathUser', JSON.stringify(data));
     return data;
