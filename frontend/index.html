@@ -4,14 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MathGraph Code Generator Pro</title>
+  <title>LatexStyleGraph - Mathematical Graph Generator</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
 
   <!-- Google Fonts -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet" />
 
   <!-- PrismJS -->
@@ -45,17 +46,39 @@
   <!-- Header -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
     <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-      <div class="flex items-center gap-2 sm:gap-3">
-        <i data-lucide="line-chart" class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600"></i>
-        <h1 class="font-bold text-lg sm:text-xl tracking-tight text-slate-800">
-          LatexStyle<span class="text-slate-400 font-normal">Graph</span>
-        </h1>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="line-chart" class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600"></i>
+          <h1 class="font-bold text-lg sm:text-xl tracking-tight text-slate-800 hover:opacity-80 cursor-pointer" onclick="window.location.href='/'">
+            LatexStyle<span class="text-slate-400 font-normal">Graph</span>
+          </h1>
+        </div>
+        <span class="hidden sm:block text-slate-300">|</span>
+        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 focus-within:border-blue-400 focus-within:bg-white transition-colors">
+          <input type="text" id="currentGraphNameDisplay" value="Untitled Graph" class="bg-transparent outline-none w-full min-w-[80px] max-w-[120px] sm:max-w-[200px] hover:text-blue-600 focus:text-slate-800" />
+          <span id="dirtyIndicator" class="text-amber-500 font-bold opacity-0 transition-opacity" title="Unsaved changes">*</span>
+        </div>
       </div>
-      <button id="resetAllBtn"
-        class="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-bold text-red-500 hover:text-red-700 transition-colors py-1 px-2 sm:py-1.5 sm:px-3 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-100">
-        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-        Reset All
-      </button>
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="newGraphBtn" class="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors py-1 px-2 sm:py-1.5 sm:px-3 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-100">
+          <i data-lucide="file-plus" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">New</span>
+        </button>
+        <button id="saveShareBtn" class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors py-1.5 px-3 rounded-lg shadow-sm">
+          <i data-lucide="save" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">Save</span>
+        </button>
+        <div id="userDisplay" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span id="userNameText" class="text-[11px] sm:text-xs font-bold text-slate-600 truncate max-w-[80px] sm:max-w-[150px]"></span>
+        </div>
+        <button id="authBtn" class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors py-1.5 px-2 sm:px-3 rounded-lg border border-slate-200 hover:border-blue-200 bg-slate-50 hover:bg-blue-50">
+          <i data-lucide="user" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span id="authBtnText">Login</span>
+        </button>
+        <button id="resetAllBtn"
+          class="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-bold text-red-500 hover:text-red-700 transition-colors py-1 px-2 sm:py-1.5 sm:px-3 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-100">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+          <span class="hidden sm:inline">Reset</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -773,10 +796,157 @@
 
   <!-- Toast Notification -->
   <div id="toast"
-    class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 flex items-center w-[calc(100%-2rem)] sm:w-full max-w-xs p-3 sm:p-4 space-x-3 text-slate-600 bg-white rounded-xl shadow-xl border border-slate-100 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 flex items-center w-[calc(100%-2rem)] sm:w-full max-w-xs p-3 sm:p-4 space-x-3 text-slate-700 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border border-slate-200 transform translate-y-32 opacity-0 transition-all duration-500 z-[999] pointer-events-none">
     <div id="toastIcon"
-      class="inline-flex items-center justify-center flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full"></div>
-    <div id="toastMsg" class="ml-3 text-xs sm:text-sm font-bold"></div>
+      class="inline-flex items-center justify-center flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-sm"></div>
+    <div id="toastMsg" class="ml-3 text-xs sm:text-sm font-bold tracking-tight"></div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative">
+      <button onclick="document.getElementById('authModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h2 id="authModalTitle" class="text-xl font-bold text-slate-800 mb-6">Login</h2>
+      <form id="authForm" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Username</label>
+          <input type="text" id="authUsername" required class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Password</label>
+          <input type="password" id="authPassword" required class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm" />
+        </div>
+        <div id="authError" class="text-xs text-red-500 font-bold hidden bg-red-50 p-2 rounded-lg border border-red-100"></div>
+        <button id="authSubmitBtn" type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2">Submit</button>
+      </form>
+      <div class="mt-5 text-center text-xs text-slate-500">
+        <span id="authToggleText">Need an account?</span> <button id="authToggleBtn" class="text-blue-600 font-bold hover:underline ml-1">Register</button>
+      </div>
+      <div class="mt-4 border-t border-slate-100 pt-4">
+        <p class="text-center text-[10px] text-slate-400 mb-3 uppercase font-bold tracking-wider">Or continue with</p>
+        <div id="googleSignInBtn" class="flex justify-center"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div id="shareModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 transform transition-all relative text-center">
+      <button onclick="document.getElementById('shareModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="check" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Graph Saved!</h2>
+      <p class="text-[13px] text-slate-500 mb-6">Share this exact graph with anyone using the link below.</p>
+      <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-1.5 mb-2">
+        <input type="text" id="shareUrlInput" readonly class="w-full bg-transparent text-xs sm:text-sm font-mono text-slate-700 outline-none px-3" />
+        <button id="copyShareBtn" class="p-2 bg-white border border-slate-200 rounded-md hover:bg-slate-100 text-slate-600 transition-colors hidden sm:block">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Graphs Modal -->
+  <div id="myGraphsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col transform transition-all relative">
+      <div class="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center shrink-0">
+        <h2 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="library" class="w-5 h-5 text-blue-500"></i> My Saved Graphs</h2>
+        <div class="flex items-center gap-3">
+          <button id="logoutBtn" class="text-xs font-bold text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1.5 rounded-md transition-colors">Logout</button>
+          <button onclick="document.getElementById('myGraphsModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 bg-slate-100 p-1.5 rounded-lg"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+        </div>
+      </div>
+      <div class="p-4 sm:p-6 overflow-y-auto bg-slate-50/50 flex-grow dark-scrollbar">
+        <div id="myGraphsList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Inject here -->
+          <div class="text-center col-span-full py-10 text-slate-400 text-sm italic">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overwrite Modal -->
+  <div id="overwriteModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative text-center">
+      <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Duplicate Title</h2>
+      <p id="overwriteMsg" class="text-[13px] text-slate-500 mb-6">A graph named "..." already exists. Do you want to overwrite it?</p>
+      <div class="flex items-center gap-3 w-full">
+        <button id="overwriteCancelBtn" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg transition-colors">Cancel</button>
+        <button id="overwriteConfirmBtn" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors">Overwrite</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Graph Modal -->
+  <div id="saveGraphModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative text-center">
+      <button onclick="document.getElementById('saveGraphModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="save" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Save Graph</h2>
+      <p class="text-[13px] text-slate-500 mb-4">Give your graph a clear name to easily find it later.</p>
+      
+      <div class="mb-5 text-left">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Graph Title</label>
+        <input type="text" id="saveGraphTitleInput" placeholder="My Awesome Graph" class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm" />
+      </div>
+
+      <button id="confirmSaveGraphBtn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2">Save Graph</button>
+    </div>
+  </div>
+
+  <!-- Unsaved Changes Modal -->
+  <div id="unsavedChangesModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative text-center">
+      <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Unsaved Changes</h2>
+      <p class="text-[13px] text-slate-500 mb-6">You have unsaved changes. Are you sure you want to start a new graph anyway? All unsaved work will be lost.</p>
+      <div class="flex flex-col gap-2 w-full">
+        <button id="unsavedSaveNewBtn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2">Save & Start New</button>
+        <button id="unsavedConfirmBtn" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors">Discard & Start New</button>
+        <button id="unsavedCancelBtn" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg transition-colors">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Graph Modal -->
+  <div id="renameGraphModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative text-center">
+      <button onclick="document.getElementById('renameGraphModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="edit-2" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Rename Graph</h2>
+      <p class="text-[13px] text-slate-500 mb-4">Enter a new title for this graph.</p>
+      
+      <div class="mb-5 text-left">
+        <input type="text" id="renameGraphTitleInput" class="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 text-sm" />
+      </div>
+
+      <button id="confirmRenameGraphBtn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Delete Graph Modal -->
+  <div id="deleteGraphModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 transform transition-all relative text-center">
+      <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="trash-2" class="w-6 h-6"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Delete Graph</h2>
+      <p class="text-[13px] text-slate-500 mb-6">Are you sure you want to delete '<span id="deleteGraphTitleDisplay" class="font-bold"></span>'? This action cannot be undone.</p>
+      <div class="flex items-center gap-3 w-full">
+        <button id="deleteCancelBtn" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg transition-colors">Cancel</button>
+        <button id="deleteConfirmBtn" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors flex justify-center items-center gap-2">Delete</button>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="js/main.js"></script>

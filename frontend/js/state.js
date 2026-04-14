@@ -29,7 +29,26 @@ export const appState = {
   pyodideWorker: null,
   exportResolve: null,
   exportReject: null,
-  activeMathFieldId: "fn-input-0"
+  currentGraphId: null,
+  currentGraphTitle: "Untitled Graph",
+  isDirty: false,
+  activeMathFieldId: "fn-input-0" // Track currently focused math field
+};
+
+export const markDirty = () => {
+    if (!appState.isDirty) {
+        appState.isDirty = true;
+        const di = document.getElementById('dirtyIndicator');
+        if (di) di.style.opacity = '1';
+    }
+};
+
+export const clearDirty = () => {
+    appState.isDirty = false;
+    const di = document.getElementById('dirtyIndicator');
+    if (di) di.style.opacity = '0';
+    const nd = document.getElementById('currentGraphNameDisplay');
+    if (nd) nd.value = appState.currentGraphTitle;
 };
 
 export function resetFunctionsState() {

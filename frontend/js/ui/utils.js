@@ -69,7 +69,7 @@ export function showCustomToast(msg, isWarning = false) {
   t.classList.remove("translate-y-20", "opacity-0");
   setTimeout(() => {
     t.classList.add("translate-y-20", "opacity-0");
-  }, 2500);
+  }, 5000);
 }
 
 function lockCheckbox(id, msg) {
