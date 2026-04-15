@@ -17,7 +17,7 @@ export const debouncedRunPreview = (() => {
       const script =
         "import io, base64\nimport matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\nplt.close('all')\n" +
         code.replace("plt.show()", "") +
-        "\nbuf = io.BytesIO()\nplt.savefig(buf, format='png', bbox_inches='tight', dpi=120)\nbuf.seek(0)\nbase64.b64encode(buf.read()).decode('utf-8')";
+        "\nbuf = io.BytesIO()\nplt.savefig(buf, format='svg', bbox_inches='tight')\nbuf.seek(0)\nbase64.b64encode(buf.read()).decode('utf-8')";
 
       appState.pyodideWorker.postMessage({ type: "run", code: script });
     }, delay);
@@ -94,7 +94,7 @@ export function initWorker() {
     } else if (e.data.type === "success") {
       const graphPreview = document.getElementById("graphPreview");
       if (graphPreview) {
-        graphPreview.src = "data:image/png;base64," + e.data.image;
+        graphPreview.src = "data:image/svg+xml;base64," + e.data.image;
         graphPreview.classList.remove("hidden");
       }
       document.getElementById("errorOverlay")?.classList.add("hidden");
